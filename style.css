@@ -1,0 +1,536 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: #01050e;
+  color: #e6f1ff;
+}
+
+#stars {
+  position: fixed; inset: 0;
+  z-index: 0; display: block;
+}
+
+/* ===== ГЛОБУС ===== */
+#globeWrap {
+  position: fixed; inset: 0;
+  z-index: 1;
+  transition: opacity 1s ease;
+}
+#globeSvg { width: 100%; height: 100%; display: block; }
+.globe-sphere {
+  fill: #0a1a30;
+  stroke: #1a4a7a;
+  stroke-width: 0.6;
+  filter: drop-shadow(0 0 30px rgba(0, 150, 220, 0.4));
+}
+.country {
+  fill: #123a5f;
+  stroke: #2d6a9a;
+  stroke-width: 0.3;
+}
+
+/* ===== КАРТА ===== */
+#mapWrap {
+  position: fixed; inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+  background: #01050e;
+}
+#mapWrap.show { opacity: 1; pointer-events: auto; }
+
+#leafletMap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: #01050e;
+}
+
+/* Спутник — яркий, насыщенный (внутри Татарстана) */
+.leaflet-tile-pane {
+  filter: brightness(0.85) saturate(1.3) contrast(1.05);
+}
+
+/* Тёмный фон + золотая и синяя пыль (снаружи Татарстана) */
+#leafletMap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 460;
+  background:
+    /* ===== СГУСТКИ-«ГОРОДА» (золотые) ===== */
+    radial-gradient(circle at 22% 30%, rgba(255,240,180,1) 1.6px, transparent 3px),
+    radial-gradient(circle at 24% 28%, rgba(255,220,150,0.95) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 20% 32%, rgba(255,220,150,0.9) 1.6px, transparent 3px),
+    radial-gradient(circle at 26% 33%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
+    radial-gradient(circle at 18% 27%, rgba(255,200,120,0.9) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 28% 26%, rgba(255,220,150,0.8) 1px, transparent 2px),
+
+    radial-gradient(circle at 78% 35%, rgba(255,240,180,1) 1.6px, transparent 3px),
+    radial-gradient(circle at 80% 38%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 76% 33%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
+    radial-gradient(circle at 82% 32%, rgba(255,200,120,0.9) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 84% 39%, rgba(255,220,150,0.8) 1px, transparent 2px),
+
+    radial-gradient(circle at 15% 70%, rgba(200,230,255,1) 1.5px, transparent 2.8px),
+    radial-gradient(circle at 17% 72%, rgba(180,220,255,0.9) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 13% 68%, rgba(180,220,255,0.85) 1.1px, transparent 2.2px),
+    radial-gradient(circle at 19% 74%, rgba(200,230,255,0.8) 1px, transparent 2px),
+
+    radial-gradient(circle at 85% 75%, rgba(255,240,180,1) 1.6px, transparent 3px),
+    radial-gradient(circle at 83% 78%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 87% 72%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
+
+    radial-gradient(circle at 45% 12%, rgba(255,230,160,0.9) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 47% 14%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
+    radial-gradient(circle at 43% 15%, rgba(255,220,150,0.8) 1px, transparent 2px),
+
+    radial-gradient(circle at 60% 88%, rgba(255,240,180,1) 1.5px, transparent 2.8px),
+    radial-gradient(circle at 62% 90%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 58% 86%, rgba(255,220,150,0.85) 1.1px, transparent 2.2px),
+
+    radial-gradient(circle at 8% 45%, rgba(255,220,150,0.9) 1.5px, transparent 2.8px),
+    radial-gradient(circle at 10% 48%, rgba(255,220,150,0.85) 1.3px, transparent 2.5px),
+    radial-gradient(circle at 6% 42%, rgba(255,200,120,0.8) 1.1px, transparent 2.2px),
+
+    radial-gradient(circle at 92% 20%, rgba(255,240,180,0.95) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 94% 23%, rgba(255,220,150,0.9) 1.2px, transparent 2.4px),
+
+    radial-gradient(circle at 5% 88%, rgba(200,230,255,0.9) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 7% 91%, rgba(180,220,255,0.85) 1.2px, transparent 2.4px),
+
+    radial-gradient(circle at 95% 88%, rgba(255,240,180,0.9) 1.4px, transparent 2.6px),
+    radial-gradient(circle at 93% 91%, rgba(255,220,150,0.85) 1.2px, transparent 2.4px),
+
+    /* ===== МЯГКИЕ СВЕТЯЩИЕСЯ ОБЛАСТИ (гало вокруг городов) ===== */
+    radial-gradient(ellipse 18% 12% at 22% 30%, rgba(255,200,100,0.22), transparent 70%),
+    radial-gradient(ellipse 14% 20% at 78% 35%, rgba(255,180,60,0.18), transparent 70%),
+    radial-gradient(ellipse 20% 15% at 15% 70%, rgba(80,160,255,0.18), transparent 70%),
+    radial-gradient(ellipse 16% 18% at 85% 75%, rgba(255,200,100,0.18), transparent 70%),
+    radial-gradient(ellipse 12% 18% at 45% 13%, rgba(255,200,100,0.15), transparent 70%),
+    radial-gradient(ellipse 22% 18% at 60% 88%, rgba(255,180,60,0.18), transparent 70%),
+    radial-gradient(ellipse 10% 18% at 8% 45%, rgba(255,200,100,0.15), transparent 70%),
+    radial-gradient(ellipse 12% 14% at 92% 22%, rgba(255,200,100,0.15), transparent 70%),
+
+    /* ===== МЕЛКАЯ ПЫЛЬ ===== */
+    radial-gradient(circle, rgba(255,220,150,0.75) 0.8px, transparent 1.6px),
+    radial-gradient(circle, rgba(80,160,255,0.7) 0.9px, transparent 1.7px),
+    radial-gradient(circle, rgba(255,180,60,0.55) 0.6px, transparent 1.3px),
+    radial-gradient(circle, rgba(120,190,255,0.65) 0.8px, transparent 1.5px),
+    radial-gradient(circle, rgba(255,240,180,0.45) 0.7px, transparent 1.4px),
+
+    /* ===== ОЧЕНЬ ТЁМНЫЙ ФОН ===== */
+    radial-gradient(ellipse at center,
+      rgba(1, 8, 25, 0.85) 0%,
+      rgba(0, 4, 15, 0.95) 60%,
+      rgba(0, 2, 8, 1) 100%);
+  background-size:
+    100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%,
+    100% 100%, 100% 100%,
+    100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+    180px 180px, 220px 220px, 260px 260px, 300px 300px, 340px 340px,
+    100% 100%;
+  background-position:
+    0 0, 0 0, 0 0, 0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0,
+    0 0, 0 0,
+    0 0, 0 0,
+    0 0, 0 0,
+    0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0,
+    0 0, 40px 60px, 100px 30px, 20px 120px, 150px 80px,
+    0 0;
+  /* Дырка под Татарстан — пыль не касается его */
+  -webkit-mask-image: radial-gradient(ellipse 42% 52% at 52% 48%,
+                        transparent 0%,
+                        transparent 88%,
+                        black 100%);
+  mask-image: radial-gradient(ellipse 42% 52% at 52% 48%,
+                        transparent 0%,
+                        transparent 88%,
+                        black 100%);
+                      }
+
+/* Оверлей SVG */
+#mapOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Свечение границы Татарстана */
+.tatar-glow-border {
+  filter: drop-shadow(0 0 6px #00e8ff)
+          drop-shadow(0 0 14px rgba(0, 220, 255, 0.9))
+          drop-shadow(0 0 26px rgba(0, 180, 255, 0.55));
+}
+
+/* Скрываем водяной знак Leaflet */
+.leaflet-control-attribution { display: none !important; }
+.leaflet-container { background: #01050e !important; }
+
+/* ===== НИТИ ===== */
+.thread {
+  fill: none;
+  stroke: url(#lineGrad);
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(255, 160, 40, 0.8))
+          drop-shadow(0 0 10px rgba(255, 130, 20, 0.4));
+  opacity: 0;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+}
+.thread.visible {
+  opacity: 0.95;
+  animation: threadPulse 3s ease-in-out infinite;
+}
+.thread.drawn {
+  transition: stroke-dashoffset 3.5s ease-out;
+  stroke-dashoffset: 0;
+}
+@keyframes threadPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+/* ===== ГОРОДА ===== */
+.city { opacity: 0; transition: opacity 0.8s ease; }
+.city.visible { opacity: 1; }
+
+.city-glow {
+  fill: url(#cityGlow);
+  animation: cityPulse 2.5s ease-in-out infinite;
+}
+@keyframes cityPulse {
+  0%, 100% { opacity: 0.75; }
+  50%      { opacity: 1; }
+}
+
+.city-core {
+  fill: #fff5c2;
+  filter: drop-shadow(0 0 6px #ffcc33) drop-shadow(0 0 14px #ff8800);
+}
+
+.city-label {
+  fill: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  paint-order: stroke;
+  stroke: #041020;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.hub .city-glow { animation: hubPulse 2s ease-in-out infinite; }
+@keyframes hubPulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+.hub .city-core {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 22px #ffcc33);
+}
+.hub .city-label {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* ===== НАША ШКОЛА ===== */
+.school-marker {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.school-marker.show { opacity: 1; }
+
+.school-glow {
+  fill: url(#schoolGlow);
+  animation: schoolPulse 2.5s ease-in-out infinite;
+}
+@keyframes schoolPulse {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+
+.school-halo {
+  fill: none;
+  stroke: #00ffa3;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 10px #00ffa3);
+  animation: schoolHalo 2s ease-in-out infinite;
+}
+@keyframes schoolHalo {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.school-core {
+  fill: #00ffa3;
+  filter: drop-shadow(0 0 8px #00ffa3) drop-shadow(0 0 18px #00ffa3);
+}
+
+.school-label {
+  fill: #00ffa3;
+  font-size: 15px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: #041020;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 163, 0.8));
+}
+
+/* Вспышка */
+.flash { fill: #ffffff; opacity: 0; pointer-events: none; }
+.flash.burst { animation: flashBurst 1.1s ease-out; }
+@keyframes flashBurst {
+  0%   { r: 8; opacity: 1; }
+  40%  { r: 70; opacity: 0.85; }
+  100% { r: 160; opacity: 0; }
+}
+
+/* Лучи */
+.ray {
+  stroke: #00ffa3;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px #00ffa3);
+}
+.ray.burst { animation: rayBurst 1.4s ease-out; }
+@keyframes rayBurst {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Импульс */
+.impulse {
+  fill: none;
+  stroke: #00ffa3;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 40 2000;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 8px #00ffa3);
+  opacity: 0;
+}
+.impulse.run {
+  opacity: 1;
+  animation: impulseRun 1.5s ease-in-out;
+}
+@keyframes impulseRun {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -2000; }
+}
+
+/* ===== UI ===== */
+.stat-panel {
+  position: fixed;
+  left: 2.5vw; top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  padding: 1.6vh 2vw;
+  background: linear-gradient(135deg, rgba(4, 18, 40, 0.9), rgba(6, 30, 60, 0.85));
+  border: 2px solid rgba(0, 200, 255, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(0, 180, 255, 0.4),
+              inset 0 0 30px rgba(0, 120, 200, 0.15);
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+.stat-label {
+  font-size: 1vw; font-weight: 600;
+  color: #7fd4ff; letter-spacing: 0.3vw;
+  margin: 0.3vh 0;
+}
+.stat-number {
+  font-size: 6vw; font-weight: 900;
+  line-height: 1; margin: 0.5vh 0;
+  color: #ffcc33;
+  text-shadow: 0 0 20px #ffaa00, 0 0 40px rgba(255, 150, 0, 0.6);
+}
+.stat-number.bump { animation: numberBump 1s ease; }
+@keyframes numberBump {
+  0%   { transform: scale(1); color: #ffcc33; }
+  30%  { transform: scale(1.4); color: #ffffff; text-shadow: 0 0 50px #ffffff; }
+  100% { transform: scale(1); color: #ffcc33; }
+}
+
+.title { position: fixed; left: 2.5vw; top: 4vh; z-index: 10; }
+.title-top {
+  font-size: 2vw; font-weight: 800;
+  color: #ffffff; letter-spacing: 0.2vw;
+  text-shadow: 0 0 20px rgba(0, 200, 255, 0.8);
+}
+.title-bottom {
+  font-size: 3vw; font-weight: 900;
+  color: #ffcc33; letter-spacing: 0.3vw;
+  text-shadow: 0 0 25px #ffaa00, 0 0 50px rgba(255, 150, 0, 0.6);
+  margin-top: 0.3vh;
+}
+
+.school-panel {
+  position: fixed;
+  right: 2.5vw; top: 45%;
+  transform: translateY(-50%);
+  z-index: 10;
+  padding: 1.4vh 1.5vw;
+  background: linear-gradient(135deg, rgba(4, 18, 40, 0.9), rgba(6, 30, 60, 0.85));
+  border: 2px solid rgba(0, 255, 163, 0.6);
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 255, 163, 0.4);
+  text-align: right;
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.school-panel.show { opacity: 1; }
+.school-name {
+  font-size: 1.4vw; font-weight: 800;
+  color: #ffffff; letter-spacing: 0.1vw;
+  margin-bottom: 0.4vh;
+}
+.school-status {
+  font-size: 0.8vw; font-weight: 700;
+  color: #ffcc33; letter-spacing: 0.2vw;
+  line-height: 1.4;
+  animation: statusBlink 1.4s ease-in-out infinite;
+}
+@keyframes statusBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+.school-status.connected { color: #00ffa3; animation: none; }
+
+.countdown {
+  position: fixed;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  display: none;
+  pointer-events: none;
+}
+.countdown.show { display: block; }
+.countdown-number {
+  font-size: 18vw;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 0 60px #00d4ff, 0 0 120px #0088ff, 0 0 200px #0066cc;
+  animation: countPulse 1s ease-out;
+  letter-spacing: -1vw;
+}
+@keyframes countPulse {
+  0%   { transform: scale(0.4); opacity: 0; }
+  30%  { transform: scale(1.1); opacity: 1; }
+  70%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.final-plate {
+  position: fixed;
+  left: 50%; bottom: 15vh;
+  transform: translate(-50%, 200%);
+  z-index: 20;
+  padding: 1.8vh 4vw;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(0, 30, 60, 0.96), rgba(0, 60, 100, 0.96));
+  border: 3px solid #ffcc33;
+  border-radius: 14px;
+  box-shadow: 0 0 60px rgba(255, 200, 50, 0.7),
+              inset 0 0 40px rgba(255, 150, 0, 0.15);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.2), opacity 0.5s ease;
+  white-space: nowrap;
+}
+.final-plate.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.final-small {
+  font-size: 1vw; font-weight: 700;
+  color: #7fd4ff; letter-spacing: 0.4vw;
+  margin-bottom: 0.6vh;
+}
+.final-big {
+  font-size: 3.2vw; font-weight: 900;
+  color: #ffcc33; letter-spacing: 0.3vw;
+  text-shadow: 0 0 25px #ffaa00, 0 0 60px rgba(255, 150, 0, 0.8);
+}
+
+.btn-connect {
+  position: fixed;
+  left: 50%; bottom: 4vh;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 1.4vh 3vw;
+  border: 2px solid #00d4ff;
+  border-radius: 40px;
+  background: linear-gradient(135deg, rgba(0, 80, 140, 0.9), rgba(0, 40, 90, 0.9));
+  color: #ffffff;
+  font-size: 1vw; font-weight: 700;
+  letter-spacing: 0.2vw;
+  cursor: pointer;
+  box-shadow: 0 0 30px rgba(0, 200, 255, 0.6);
+  transition: all 0.3s;
+  backdrop-filter: blur(8px);
+}
+.btn-connect:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 0 50px rgba(0, 220, 255, 1);
+}
+.btn-connect:disabled {
+  opacity: 0.5; cursor: not-allowed; box-shadow: none;
+  transform: translateX(-50%);
+}
+
+.start-screen {
+  position: fixed; inset: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.start-screen.hide { opacity: 0; }
+.btn-start {
+  pointer-events: auto;
+  padding: 1.5vh 3vw;
+  border: 2px solid #00d4ff;
+  border-radius: 40px;
+  background: linear-gradient(135deg, rgba(0, 80, 140, 0.95), rgba(0, 40, 90, 0.95));
+  color: #fff;
+  font-size: 1.1vw; font-weight: 700;
+  letter-spacing: 0.2vw;
+  cursor: pointer;
+  box-shadow: 0 0 40px rgba(0, 200, 255, 0.7);
+  transition: all 0.3s;
+  backdrop-filter: blur(8px);
+}
+.btn-start:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 60px rgba(0, 220, 255, 1);
+}
