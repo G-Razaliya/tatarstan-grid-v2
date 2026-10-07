@@ -13,6 +13,33 @@ html, body {
   z-index: 0; display: block;
 }
 
+.company-logo {
+  position: fixed;
+  top: 3vh;
+  right: 3vw;
+  z-index: 50;
+  padding: 10px 20px;
+  background: rgba(4, 18, 40, 0.5);
+  border: 1px solid rgba(0, 200, 255, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 25px rgba(0, 150, 220, 0.25);
+  transition: all 0.3s ease;
+}
+.company-logo:hover {
+  border-color: rgba(0, 220, 255, 0.6);
+  box-shadow: 0 0 35px rgba(0, 200, 255, 0.5);
+}
+.company-logo img {
+  display: block;
+  max-height: 60px;
+  max-width: 200px;
+  width: auto; height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(120, 200, 255, 0.6))
+          drop-shadow(0 0 12px rgba(0, 160, 255, 0.35));
+}
+
 /* ===== ГЛОБУС ===== */
 #globeWrap {
   position: fixed; inset: 0;
@@ -46,18 +73,15 @@ html, body {
 #leafletMap {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   z-index: 1;
   background: #01050e;
 }
 
-/* Спутник — яркий, насыщенный (внутри Татарстана) */
 .leaflet-tile-pane {
   filter: brightness(0.85) saturate(1.3) contrast(1.05);
 }
 
-/* Тёмный фон + золотая и синяя пыль (снаружи Татарстана) */
 #leafletMap::after {
   content: "";
   position: absolute;
@@ -65,51 +89,39 @@ html, body {
   pointer-events: none;
   z-index: 460;
   background:
-    /* ===== СГУСТКИ-«ГОРОДА» (золотые) ===== */
     radial-gradient(circle at 22% 30%, rgba(255,240,180,1) 1.6px, transparent 3px),
     radial-gradient(circle at 24% 28%, rgba(255,220,150,0.95) 1.3px, transparent 2.5px),
     radial-gradient(circle at 20% 32%, rgba(255,220,150,0.9) 1.6px, transparent 3px),
     radial-gradient(circle at 26% 33%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
     radial-gradient(circle at 18% 27%, rgba(255,200,120,0.9) 1.4px, transparent 2.6px),
     radial-gradient(circle at 28% 26%, rgba(255,220,150,0.8) 1px, transparent 2px),
-
     radial-gradient(circle at 78% 35%, rgba(255,240,180,1) 1.6px, transparent 3px),
     radial-gradient(circle at 80% 38%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
     radial-gradient(circle at 76% 33%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
     radial-gradient(circle at 82% 32%, rgba(255,200,120,0.9) 1.4px, transparent 2.6px),
     radial-gradient(circle at 84% 39%, rgba(255,220,150,0.8) 1px, transparent 2px),
-
     radial-gradient(circle at 15% 70%, rgba(200,230,255,1) 1.5px, transparent 2.8px),
     radial-gradient(circle at 17% 72%, rgba(180,220,255,0.9) 1.3px, transparent 2.5px),
     radial-gradient(circle at 13% 68%, rgba(180,220,255,0.85) 1.1px, transparent 2.2px),
     radial-gradient(circle at 19% 74%, rgba(200,230,255,0.8) 1px, transparent 2px),
-
     radial-gradient(circle at 85% 75%, rgba(255,240,180,1) 1.6px, transparent 3px),
     radial-gradient(circle at 83% 78%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
     radial-gradient(circle at 87% 72%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
-
     radial-gradient(circle at 45% 12%, rgba(255,230,160,0.9) 1.4px, transparent 2.6px),
     radial-gradient(circle at 47% 14%, rgba(255,220,150,0.85) 1.2px, transparent 2.3px),
     radial-gradient(circle at 43% 15%, rgba(255,220,150,0.8) 1px, transparent 2px),
-
     radial-gradient(circle at 60% 88%, rgba(255,240,180,1) 1.5px, transparent 2.8px),
     radial-gradient(circle at 62% 90%, rgba(255,220,150,0.9) 1.3px, transparent 2.5px),
     radial-gradient(circle at 58% 86%, rgba(255,220,150,0.85) 1.1px, transparent 2.2px),
-
     radial-gradient(circle at 8% 45%, rgba(255,220,150,0.9) 1.5px, transparent 2.8px),
     radial-gradient(circle at 10% 48%, rgba(255,220,150,0.85) 1.3px, transparent 2.5px),
     radial-gradient(circle at 6% 42%, rgba(255,200,120,0.8) 1.1px, transparent 2.2px),
-
     radial-gradient(circle at 92% 20%, rgba(255,240,180,0.95) 1.4px, transparent 2.6px),
     radial-gradient(circle at 94% 23%, rgba(255,220,150,0.9) 1.2px, transparent 2.4px),
-
     radial-gradient(circle at 5% 88%, rgba(200,230,255,0.9) 1.4px, transparent 2.6px),
     radial-gradient(circle at 7% 91%, rgba(180,220,255,0.85) 1.2px, transparent 2.4px),
-
     radial-gradient(circle at 95% 88%, rgba(255,240,180,0.9) 1.4px, transparent 2.6px),
     radial-gradient(circle at 93% 91%, rgba(255,220,150,0.85) 1.2px, transparent 2.4px),
-
-    /* ===== МЯГКИЕ СВЕТЯЩИЕСЯ ОБЛАСТИ (гало вокруг городов) ===== */
     radial-gradient(ellipse 18% 12% at 22% 30%, rgba(255,200,100,0.22), transparent 70%),
     radial-gradient(ellipse 14% 20% at 78% 35%, rgba(255,180,60,0.18), transparent 70%),
     radial-gradient(ellipse 20% 15% at 15% 70%, rgba(80,160,255,0.18), transparent 70%),
@@ -118,15 +130,11 @@ html, body {
     radial-gradient(ellipse 22% 18% at 60% 88%, rgba(255,180,60,0.18), transparent 70%),
     radial-gradient(ellipse 10% 18% at 8% 45%, rgba(255,200,100,0.15), transparent 70%),
     radial-gradient(ellipse 12% 14% at 92% 22%, rgba(255,200,100,0.15), transparent 70%),
-
-    /* ===== МЕЛКАЯ ПЫЛЬ ===== */
     radial-gradient(circle, rgba(255,220,150,0.75) 0.8px, transparent 1.6px),
     radial-gradient(circle, rgba(80,160,255,0.7) 0.9px, transparent 1.7px),
     radial-gradient(circle, rgba(255,180,60,0.55) 0.6px, transparent 1.3px),
     radial-gradient(circle, rgba(120,190,255,0.65) 0.8px, transparent 1.5px),
     radial-gradient(circle, rgba(255,240,180,0.45) 0.7px, transparent 1.4px),
-
-    /* ===== ОЧЕНЬ ТЁМНЫЙ ФОН ===== */
     radial-gradient(ellipse at center,
       rgba(1, 8, 25, 0.85) 0%,
       rgba(0, 4, 15, 0.95) 60%,
@@ -159,7 +167,6 @@ html, body {
     0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0,
     0 0, 40px 60px, 100px 30px, 20px 120px, 150px 80px,
     0 0;
-  /* Дырка под Татарстан — пыль не касается его */
   -webkit-mask-image: radial-gradient(ellipse 42% 52% at 52% 48%,
                         transparent 0%,
                         transparent 88%,
@@ -168,9 +175,8 @@ html, body {
                         transparent 0%,
                         transparent 88%,
                         black 100%);
-                      }
+}
 
-/* Оверлей SVG */
 #mapOverlay {
   position: absolute;
   top: 0;
@@ -179,14 +185,12 @@ html, body {
   pointer-events: none;
 }
 
-/* Свечение границы Татарстана */
 .tatar-glow-border {
   filter: drop-shadow(0 0 6px #00e8ff)
           drop-shadow(0 0 14px rgba(0, 220, 255, 0.9))
           drop-shadow(0 0 26px rgba(0, 180, 255, 0.55));
 }
 
-/* Скрываем водяной знак Leaflet */
 .leaflet-control-attribution { display: none !important; }
 .leaflet-container { background: #01050e !important; }
 
@@ -260,7 +264,7 @@ html, body {
   letter-spacing: 1px;
 }
 
-/* ===== НАША ШКОЛА ===== */
+/* ===== ЛИЦЕЙ «ПРОГРЕСС» — ЗЕЛЁНЫЙ ===== */
 .school-marker {
   opacity: 0;
   transition: opacity 0.6s ease;
@@ -314,7 +318,7 @@ html, body {
   100% { r: 160; opacity: 0; }
 }
 
-/* Лучи */
+/* Лучи — зелёные */
 .ray {
   stroke: #00ffa3;
   stroke-width: 3;
@@ -328,7 +332,7 @@ html, body {
   100% { opacity: 0; }
 }
 
-/* Импульс */
+/* Импульс — зелёный */
 .impulse {
   fill: none;
   stroke: #00ffa3;
@@ -441,14 +445,14 @@ html, body {
   font-weight: 900;
   color: #ffffff;
   text-shadow: 0 0 60px #00d4ff, 0 0 120px #0088ff, 0 0 200px #0066cc;
-  animation: countPulse 1s ease-out;
+  animation: countPulse 0.6s ease-out;
   letter-spacing: -1vw;
+  opacity: 1;
 }
 @keyframes countPulse {
-  0%   { transform: scale(0.4); opacity: 0; }
-  30%  { transform: scale(1.1); opacity: 1; }
-  70%  { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0%   { transform: scale(0.5); opacity: 0; }
+  40%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .final-plate {
@@ -533,4 +537,36 @@ html, body {
 .btn-start:hover {
   transform: translateY(-3px);
   box-shadow: 0 0 60px rgba(0, 220, 255, 1);
+}
+
+
+/* ============================================================
+   КНОПКА ЗВУКА (правый верхний угол, под логотипом)
+   ============================================================ */
+.sound-btn {
+  position: fixed;
+  top: 14vh;
+  right: 3vw;
+  z-index: 50;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(4, 18, 40, 0.85);
+  border: 2px solid rgba(0, 200, 255, 0.5);
+  color: #7fd4ff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  backdrop-filter: blur(6px);
+}
+.sound-btn:hover {
+  border-color: #00e0ff;
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
+}
+.sound-btn.muted {
+  color: #666;
+  border-color: rgba(100, 100, 100, 0.5);
 }

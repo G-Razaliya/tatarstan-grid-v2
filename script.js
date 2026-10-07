@@ -1,4 +1,63 @@
 // ============================================================
+// 0. АУДИО-МЕНЕДЖЕР (Howler.js)
+// ============================================================
+const Sound = {
+  sounds: {},
+  enabled: true,
+  inited: false,
+
+  init() {
+    if (this.inited) return;
+    this.inited = true;
+    if (typeof Howl === "undefined") {
+      console.warn("Howler.js не загружен — звуки отключены");
+      this.enabled = false;
+      return;
+    }
+    this.sounds = {
+      click:   new Howl({ src: ["snd-click.mp3"],   volume: 1.0 }),
+      whoosh:  new Howl({ src: ["snd-whoosh.mp3"],  volume: 1.0 }),
+      beep:    new Howl({ src: ["snd-beep.mp3"],    volume: 0.35 }),
+      connect: new Howl({ src: ["snd-connect.mp3"], volume: 0.85, rate: 2 })
+    };
+      },
+
+  play(name) {
+    if (!this.enabled || !this.sounds[name]) return;
+    this.sounds[name].play();
+  },
+
+  toggle() {
+    this.enabled = !this.enabled;
+    if (!this.enabled) {
+      Object.values(this.sounds).forEach(s => s.stop());
+    }
+    return this.enabled;
+  }
+};
+
+// Инициализация при первом действии пользователя
+let soundInited = false;
+function initSoundOnce() {
+  if (soundInited) return;
+  soundInited = true;
+  Sound.init();
+}
+window.addEventListener("click", initSoundOnce, { once: true });
+window.addEventListener("keydown", initSoundOnce, { once: true });
+
+// Кнопка вкл/выкл
+window.addEventListener("load", () => {
+  const btn = document.getElementById("soundBtn");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const enabled = Sound.toggle();
+    btn.textContent = enabled ? "🔊" : "🔇";
+    btn.classList.toggle("muted", !enabled);
+  });
+});
+
+// ============================================================
 // 1. ЗВЁЗДЫ
 // ============================================================
 const starsCanvas = document.getElementById("stars");
@@ -92,31 +151,29 @@ const cities = [
   { name: "Казань",         lat: 55.79, lon: 49.12, hub: true, labelOffset: [-20, 30], anchor: "end" },
   { name: "Высокая Гора",   lat: 55.91, lon: 49.31, labelOffset: [-20, -18], anchor: "end" },
   { name: "Агрыз",          lat: 56.52, lon: 53.00, labelOffset: [16, -10],  anchor: "start" },
+  { name: "Терси",          lat: 56.38, lon: 53.13, labelOffset: [16, 4],    anchor: "start" },
   { name: "Муслюмово",      lat: 55.30, lon: 53.18, labelOffset: [16, -10],  anchor: "start" },
-  { name: "Азнакаево",      lat: 54.85, lon: 53.10, labelOffset: [16, 4],    anchor: "start" },
   { name: "Лениногорск",    lat: 54.60, lon: 52.55, labelOffset: [16, -6],   anchor: "start" },
   { name: "Тимяшево",       lat: 54.58, lon: 52.48, labelOffset: [-16, 14],  anchor: "end" },
-  { name: "Бугульма",       lat: 54.53, lon: 52.79, labelOffset: [16, 14],   anchor: "start" },
   { name: "Чистополь",      lat: 55.37, lon: 50.63, labelOffset: [-16, -10], anchor: "end" },
   { name: "Новошешминск",   lat: 55.05, lon: 51.15, labelOffset: [-16, 14],  anchor: "end" },
   { name: "Аксубаево",      lat: 54.82, lon: 50.78, labelOffset: [-16, 14],  anchor: "end" },
   { name: "Елабуга",        lat: 55.76, lon: 52.06, labelOffset: [-16, -14], anchor: "end" },
   { name: "Мамадыш",        lat: 55.72, lon: 51.40, labelOffset: [-16, -10], anchor: "end" },
   { name: "Заинск",         lat: 55.30, lon: 52.02, labelOffset: [16, 4],    anchor: "start" },
-  { name: "Нижнекамск",     lat: 55.64, lon: 51.82, labelOffset: [-16, 14],  anchor: "end" },
-  { name: "Наб. Челны",     lat: 55.73, lon: 52.41, labelOffset: [16, -14],  anchor: "start" }
+  { name: "Нижнекамск",     lat: 55.64, lon: 51.82, labelOffset: [-16, 14],  anchor: "end" }
 ];
 
-const schoolCity = { name: "Наша школа", lat: 55.81, lon: 49.44, labelOffset: [22, -20], anchor: "start" };
+const schoolCity = { name: "Лицей «Прогресс»", lat: 55.81, lon: 49.44, labelOffset: [22, -20], anchor: "start" };
 
 // ============================================================
-// 4. LEAFLET КАРТА — статичная
+// 4. LEAFLET КАРТА
 // ============================================================
 const map = L.map("leafletMap", {
   zoomControl: false,
   attributionControl: false,
   center: [55.4, 51.0],
-  zoom: 8,
+  zoom: 7.6,
   zoomSnap: 0.1,
   zoomAnimation: false,
   fadeAnimation: false,
@@ -141,7 +198,7 @@ boundaryPane.style.zIndex = 500;
 boundaryPane.style.pointerEvents = "none";
 
 // ============================================================
-// 5. ОВЕРЛЕЙ SVG
+// 5. ОВЕРЛЕЙ
 // ============================================================
 const overlaySvg = document.getElementById("mapOverlay");
 const threadsLayer = document.getElementById("threadsLayer");
@@ -163,7 +220,7 @@ map.on("resize", syncOverlaySize);
 syncOverlaySize();
 
 // ============================================================
-// 6. ЗАГРУЗКА КОНТУРА + МАСКА + ПОДПИСИ
+// 6. ЗАГРУЗКА КОНТУРА
 // ============================================================
 let TATARSTAN_GEOJSON = null;
 
@@ -189,7 +246,6 @@ fetch("tatarstan.geojson")
       rings = coords.map(p => p[0]);
     }
 
-    // === 1. ТЁМНАЯ МАСКА СНАРУЖИ (очень тёмная) ===
     const worldBox = [[-85, -180], [-85, 180], [85, 180], [85, -180]];
     L.polygon([worldBox, ...rings], {
       color: "none",
@@ -198,7 +254,6 @@ fetch("tatarstan.geojson")
       interactive: false
     }).addTo(map);
 
-    // === 2. ГОЛУБОЕ СВЕЧЕНИЕ ПО ГРАНИЦЕ ===
     L.polygon(rings, {
       color: "#00e8ff",
       weight: 3.5,
@@ -208,39 +263,7 @@ fetch("tatarstan.geojson")
       interactive: false
     }).addTo(map);
 
-    // === 3. ПОДПИСИ РЕГИОНОВ ===
-    const regions = [
-      { name: "Республика\nМарий Эл",      pos: [56.75, 47.8], size: 13 },
-      { name: "Кировская\nобласть",        pos: [57.35, 50.4], size: 13 },
-      { name: "Удмуртская\nРеспублика",    pos: [57.10, 52.8], size: 13 },
-      { name: "Республика\nБашкортостан",  pos: [54.4,  55.9], size: 13 },
-      { name: "Оренбургская\nобласть",     pos: [52.8,  54.4], size: 13 },
-      { name: "Самарская\nобласть",        pos: [52.95, 51.2], size: 13 },
-      { name: "Ульяновская\nобласть",      pos: [54.05, 48.5], size: 13 },
-      { name: "Чувашская\nРеспублика",     pos: [55.60, 46.9], size: 13 }
-    ];
-
-    regions.forEach(r => {
-      const icon = L.divIcon({
-        className: "",
-        html: `<div style="
-          color: #8ec4e8;
-          font-family: 'Segoe UI', Tahoma, sans-serif;
-          font-size: ${r.size}px;
-          font-weight: 600;
-          letter-spacing: 2px;
-          text-align: center;
-          white-space: pre;
-          text-shadow: 0 0 4px #01050e, 0 0 8px #01050e, 0 0 12px #01050e;
-          line-height: 1.5;
-          transform: translate(-50%, -50%);
-        ">${r.name}</div>`,
-        iconSize: [0, 0]
-      });
-      L.marker(r.pos, { icon, interactive: false }).addTo(map);
-    });
-
-    console.log("✓ Контур, свечение и регионы загружены");
+    console.log("✓ Контур и свечение загружены");
 
     setTimeout(() => {
       syncOverlaySize();
@@ -315,7 +338,7 @@ function drawCities() {
     g.appendChild(text);
 
     citiesLayer.appendChild(g);
-    setTimeout(() => g.classList.add("visible"), 500 + i * 60);
+    setTimeout(() => g.classList.add("visible"), 500 + i * 200);
   });
 
   const schoolP = project(schoolCity.lat, schoolCity.lon);
@@ -343,17 +366,16 @@ function drawCities() {
   sLabel.setAttribute("x", schoolCity.labelOffset[0]);
   sLabel.setAttribute("y", schoolCity.labelOffset[1]);
   sLabel.setAttribute("text-anchor", schoolCity.anchor);
-  sLabel.textContent = "Наша школа";
+  sLabel.textContent = "Лицей «Прогресс»";
   schoolG.appendChild(sLabel);
 
   citiesLayer.appendChild(schoolG);
 
   setTimeout(() => {
-    schoolG.classList.add("show");
     document.getElementById("schoolPanel").classList.add("show");
-  }, 2500);
+  }, 2000);
 
-  window.__data = { hubP, schoolP };
+  window.__data = { hubP, schoolP, schoolG };
 }
 
 map.on("move zoom", () => {
@@ -376,6 +398,14 @@ startBtn.addEventListener("click", () => {
   startBtn.disabled = true;
   startBtn.textContent = "🌍 Приближаем…";
   autoRotate = false;
+
+  // 1. Клик — сразу
+  Sound.play("click");
+
+  // 2. Whoosh — через 250 мс (когда начинается сама анимация)
+  setTimeout(() => {
+    Sound.play("whoosh");
+  }, 250);
 
   const targetRot = [-51.5, -55.2];
   const startRot = [...rotation];
@@ -421,7 +451,7 @@ startBtn.addEventListener("click", () => {
 });
 
 // ============================================================
-// 9. ПОДКЛЮЧЕНИЕ
+// 9. ПОДКЛЮЧЕНИЕ (ОТСЧЁТ 10 → 1)
 // ============================================================
 const connectBtn = document.getElementById("connectBtn");
 const counter = document.getElementById("counter");
@@ -438,22 +468,32 @@ connectBtn.addEventListener("click", () => {
   connectBtn.disabled = true;
   connectBtn.textContent = "⏳ Подготовка...";
 
-  countdown.classList.add("show");
-  let n = 5;
-  countdownNumber.textContent = n;
-  restartCountAnim();
+  // Клик при запуске отсчёта
+  Sound.play("click");
 
-  const t = setInterval(() => {
-    n--;
-    if (n >= 1) {
-      countdownNumber.textContent = n;
-      restartCountAnim();
-    } else {
-      clearInterval(t);
-      countdown.classList.remove("show");
-      startConnection();
-    }
-  }, 1000);
+  countdown.classList.add("show");
+
+  // Сначала запускаем звук
+  Sound.play("beep");
+
+  // Небольшая задержка — пока голос начнёт говорить "десять"
+  setTimeout(() => {
+    let n = 10;
+    countdownNumber.textContent = n;
+    restartCountAnim();
+
+    const t = setInterval(() => {
+      n--;
+      if (n >= 1) {
+        countdownNumber.textContent = n;
+        restartCountAnim();
+      } else {
+        clearInterval(t);
+        countdown.classList.remove("show");
+        startConnection();
+      }
+    }, 1750);
+  }, 500);  // ← ЗАДЕРЖКА перед первой цифрой
 });
 
 function restartCountAnim() {
@@ -464,7 +504,12 @@ function restartCountAnim() {
 
 function startConnection() {
   connectBtn.textContent = "⚡ Подключение...";
-  const { hubP, schoolP } = window.__data;
+  const { hubP, schoolP, schoolG } = window.__data;
+
+  if (schoolG) schoolG.classList.add("show");
+
+  // Звук подключения
+  Sound.play("connect");
 
   const ctrlX = (hubP[0] + schoolP[0]) / 2 + 60;
   const ctrlY = (hubP[1] + schoolP[1]) / 2 - 60;
@@ -532,7 +577,7 @@ function startConnection() {
   }, 2200);
 
   setTimeout(() => {
-    counter.textContent = "21";
+    counter.textContent = "27";
     counter.classList.add("bump");
     setTimeout(() => counter.classList.remove("bump"), 1100);
   }, 2400);
@@ -546,4 +591,25 @@ function startConnection() {
   }, 3100);
 }
 
+// ============================================================
+// 10. УПРАВЛЕНИЕ ЧЕРЕЗ ENTER
+// ============================================================
+document.addEventListener("keydown", (e) => {
+  const okKeys = ["Enter", "NumpadEnter", " ", "ArrowRight", "PageDown"];
+  if (!okKeys.includes(e.key) && e.code !== "NumpadEnter") return;
+
+  e.preventDefault();
+
+  const startBtn = document.getElementById("startBtn");
+  if (startBtn && !startBtn.disabled) {
+    startBtn.click();
+    return;
+  }
+
+  const connectBtn = document.getElementById("connectBtn");
+  if (connectBtn && !connectBtn.disabled) {
+    connectBtn.click();
+    return;
+  }
+});
 console.log("✓ script.js загружен");
