@@ -1,0 +1,4 @@
+.preview-tools/
+node_modules/
+__pycache__/
+*.log

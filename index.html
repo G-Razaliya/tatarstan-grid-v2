@@ -1,86 +1,87 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Энергоклассы Татарстана</title>
-<link rel="stylesheet" href="leaflet.css">
-<link rel="stylesheet" href="style.css">
-<script src="d3.v7.min.js"></script>
-<script src="topojson-client.min.js"></script>
-<script src="leaflet.js"></script>
-<script src="howler.min.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Энергоклассы Татарстана</title>
+    <link rel="stylesheet" href="leaflet.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="d3.v7.min.js"></script>
+    <script src="topojson-client.min.js"></script>
+    <script src="leaflet.js"></script>
+    <script src="howler.min.js"></script>
+  </head>
+  <body>
 
-<canvas id="stars"></canvas>
+    <canvas id="stars" aria-hidden="true"></canvas>
 
-<div class="company-logo">
-  <img src="logo.png" alt="Логотип">
-</div>
+    <div class="company-logo">
+      <img src="logo.png" alt="Логотип">
+    </div>
 
-<button class="sound-btn" id="soundBtn" title="Звук вкл/выкл">🔊</button>
+    <button class="sound-btn" id="soundBtn" type="button" title="Звук вкл/выкл" aria-label="Выключить звук" aria-pressed="true">🔊</button>
 
-<div id="globeWrap">
-  <svg id="globeSvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
-</div>
+    <div id="globeWrap">
+      <svg id="globeSvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
 
-<div id="mapWrap">
-  <div id="leafletMap"></div>
+    <div id="mapWrap" inert>
+      <div id="leafletMap"></div>
 
-  <svg id="mapOverlay">
-    <defs>
-      <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%"   stop-color="#ffb84d" stop-opacity="1"/>
-        <stop offset="100%" stop-color="#ff8800" stop-opacity="0.8"/>
-      </linearGradient>
-      <radialGradient id="cityGlow">
-        <stop offset="0%"   stop-color="#fff5c2" stop-opacity="1"/>
-        <stop offset="35%"  stop-color="#ffcc33" stop-opacity="0.85"/>
-        <stop offset="100%" stop-color="#ff8800" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="schoolGlow">
-        <stop offset="0%"   stop-color="#d6ffef" stop-opacity="1"/>
-        <stop offset="35%"  stop-color="#00ffa3" stop-opacity="0.85"/>
-        <stop offset="100%" stop-color="#00ffa3" stop-opacity="0"/>
-      </radialGradient>
-    </defs>
-    <g id="threadsLayer"></g>
-    <g id="citiesLayer"></g>
-    <g id="fxLayer"></g>
-  </svg>
+      <svg id="mapOverlay">
+        <defs>
+          <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#ffb84d" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#ff8800" stop-opacity="0.8"/>
+          </linearGradient>
+          <radialGradient id="cityGlow">
+            <stop offset="0%"   stop-color="#fff5c2" stop-opacity="1"/>
+            <stop offset="35%"  stop-color="#ffcc33" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#ff8800" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="schoolGlow">
+            <stop offset="0%"   stop-color="#d6ffef" stop-opacity="1"/>
+            <stop offset="35%"  stop-color="#00ffa3" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#00ffa3" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="threadsLayer"></g>
+        <g id="citiesLayer"></g>
+        <g id="fxLayer"></g>
+      </svg>
 
-  <div class="title">
-    <div class="title-top">ЭНЕРГОКЛАССЫ</div>
-    <div class="title-bottom">ТАТАРСТАНА</div>
-  </div>
+      <div class="title">
+        <div class="title-top">ЭНЕРГОКЛАССЫ</div>
+        <div class="title-bottom">ТАТАРСТАНА</div>
+      </div>
 
-  <div class="stat-panel">
-    <div class="stat-label">УЖЕ РАБОТАЮТ</div>
-    <div class="stat-number" id="counter">26</div>
-    <div class="stat-label">ЭНЕРГОКЛАССА</div>
-  </div>
+      <div class="stat-panel">
+        <div class="stat-label">УЖЕ РАБОТАЮТ</div>
+        <div class="stat-number" id="counter" aria-live="polite">26</div>
+        <div class="stat-label">ЭНЕРГОКЛАССА</div>
+      </div>
 
-  <div class="school-panel" id="schoolPanel">
-    <div class="school-name">Лицей «Прогресс»</div>
-    <div class="school-status" id="schoolStatus">ОЖИДАНИЕ<br>ПОДКЛЮЧЕНИЯ...</div>
-  </div>
+      <div class="school-panel" id="schoolPanel">
+        <div class="school-name">Лицей «Прогресс»</div>
+        <div class="school-status" id="schoolStatus" role="status">ОЖИДАНИЕ<br>ПОДКЛЮЧЕНИЯ...</div>
+      </div>
 
-  <div class="final-plate" id="finalPlate">
-    <div class="final-small">НОВЫЙ ЭНЕРГОКЛАСС</div>
-    <div class="final-big">ЗАПУЩЕН!</div>
-  </div>
+      <div class="final-plate" id="finalPlate">
+        <div class="final-small">НОВЫЙ ЭНЕРГОКЛАСС</div>
+        <div class="final-big">ЗАПУЩЕН!</div>
+      </div>
 
-  <div class="countdown" id="countdown">
-    <div class="countdown-number" id="countdownNumber"></div>
-  </div>
+      <div class="countdown" id="countdown">
+        <div class="countdown-number" id="countdownNumber"></div>
+      </div>
 
-  <button class="btn-connect" id="connectBtn">⚡ Подключить энергокласс</button>
-</div>
+      <button type="button" class="btn-connect" id="connectBtn" disabled>⚡ Подключить энергокласс</button>
+    </div>
 
-<div class="start-screen" id="startScreen">
-  <button class="btn-start" id="startBtn">🌍 Приблизиться к Татарстану</button>
-</div>
+    <div class="start-screen" id="startScreen">
+      <button type="button" class="btn-start" id="startBtn" disabled>Загрузка презентации…</button>
+    </div>
 
-<script src="script.js"></script>
-</body>
+    <script type="module" src="script.js"></script>
+  </body>
 </html>
