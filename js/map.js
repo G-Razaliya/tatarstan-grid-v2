@@ -6,7 +6,7 @@ export function initializeMap() {
   // Карта служит фоном презентации: ручная навигация отключена.
   const map = L.map("leafletMap", {
     zoomControl: false, attributionControl: false,
-    center: [55.4, 51], zoom: 7.6, zoomSnap: 0.05,
+    center: [55.4, 51], zoom: 9, zoomSnap: 0,
     zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false,
     dragging: false, touchZoom: false, doubleClickZoom: false,
     scrollWheelZoom: false, boxZoom: false, keyboard: false, inertia: false
@@ -65,7 +65,7 @@ export function initializeMap() {
     });
   }
 
-  // Вписывает Татарстан в свободное место между панелями.
+  // Подбирает базовый масштаб и увеличивает карту для презентации.
   function fit() {
     if (!bounds) return;
     // Обновляем размер Leaflet перед расчётом границ и отступов.
@@ -84,6 +84,9 @@ export function initializeMap() {
       paddingBottomRight: [Math.min(width - school.left + gap, width * 0.25), bottom],
       animate: false
     });
+    // Увеличиваем прежний вписанный масштаб ровно на 25% по каждой оси.
+    const fittedZoom = Math.floor(map.getZoom() * 20) / 20;
+    map.setZoom(fittedZoom + Math.log2(1.25), { animate: false });
     synchronize();
   }
 

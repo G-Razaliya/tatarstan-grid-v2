@@ -1,6 +1,6 @@
 ﻿import assert from 'node:assert/strict';
 import { beforeEach, test } from 'node:test';
-import { Sound } from '../js/audio.js';
+import { Sound, initializeAudio } from '../js/audio.js';
 
 // Substitute audio hardware to check overlapping events and mute deterministically.
 class FakeHowl {
@@ -38,7 +38,7 @@ class FakeHowl {
 
 beforeEach(() => {
   globalThis.Howl = FakeHowl;
-  Object.assign(Sound, { sounds: {}, enabled: true, inited: false, backgroundStarted: false, backgroundId: null, activeEffects: new Set() });
+  Object.assign(Sound, { sounds: {}, enabled: true, inited: false, backgroundStarted: false, backgroundId: null, backgroundPending: false, activeEffects: new Set() });
   Sound.init();
 });
 
@@ -107,4 +107,33 @@ test('slow background loading does not queue stale ducking after effects have en
   background.options.onplay();
   assert.equal(background.lastFade.to, 0.25);
   assert.equal(Sound.activeEffects.size, 0);
+});
+
+test('intro attempts background playback immediately and first gesture does not duplicate pending playback', () => {
+  const previousWindow = globalThis.window;
+  globalThis.window = new EventTarget();
+  const button = new EventTarget();
+  try {
+    initializeAudio(button);
+    assert.equal(Sound.backgroundStarted, true);
+    assert.equal(Sound.sounds.bg.playCalls.length, 1);
+    globalThis.window.dispatchEvent(new Event('pointerdown'));
+    assert.equal(Sound.sounds.bg.playCalls.length, 1);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
+
+test('blocked autoplay retries the same background after audio unlock', () => {
+  Sound.startBackground();
+  const id = Sound.backgroundId;
+  Sound.sounds.bg.ids.delete(id);
+  Sound.sounds.bg.options.onplayerror();
+  assert.equal(Sound.backgroundPending, false);
+  Sound.sounds.bg.emit('unlock');
+  assert.deepEqual(Sound.sounds.bg.playCalls, [id, id]);
+  Sound.sounds.bg.options.onplay();
+  assert.equal(Sound.backgroundPending, false);
+  assert.equal(Sound.sounds.bg.lastFade.to, 0.25);
 });

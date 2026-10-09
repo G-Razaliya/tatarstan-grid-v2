@@ -5,6 +5,7 @@ export const Sound = {
   inited: false,
   backgroundStarted: false,
   backgroundId: null,
+  backgroundPending: false,
   activeEffects: new Set(),
 
   // Создаём звуки один раз; при отсутствии Howler отключаем воспроизведение.
@@ -26,7 +27,16 @@ export const Sound = {
       bg: new Howl({
         src: ["snd-bg.mp3"], volume: 0.25, loop: true,
         // После загрузки применяем актуальную громкость, а не старую очередь fade.
-        onplay: () => this.updateBackground()
+        onplay: () => {
+          this.backgroundPending = false;
+          if (!this.enabled) this.sounds.bg.pause(this.backgroundId);
+          else this.updateBackground();
+        },
+        // Если автозапуск заблокирован, повторяем после разблокировки аудио.
+        onplayerror: () => {
+          this.backgroundPending = false;
+          this.sounds.bg.once("unlock", () => this.startBackground());
+        }
       })
     };
   },
@@ -62,8 +72,12 @@ export const Sound = {
   startBackground() {
     this.backgroundStarted = true;
     if (!this.enabled || !this.sounds.bg) return;
-    if (this.backgroundId === null) this.backgroundId = this.sounds.bg.play();
-    else if (!this.sounds.bg.playing(this.backgroundId)) this.sounds.bg.play(this.backgroundId);
+    if (!this.backgroundPending && !this.sounds.bg.playing(this.backgroundId)) {
+      this.backgroundPending = true;
+      this.backgroundId = this.backgroundId === null
+        ? this.sounds.bg.play() : this.sounds.bg.play(this.backgroundId);
+      if (this.backgroundId === null) this.backgroundPending = false;
+    }
     this.updateBackground();
   },
 
@@ -86,6 +100,7 @@ export const Sound = {
       for (const [name, sound] of Object.entries(this.sounds)) {
         if (name === "bg") {
           if (this.backgroundId !== null) sound.pause(this.backgroundId);
+          this.backgroundPending = false;
         } else sound.stop();
       }
     } else if (this.backgroundStarted) {
@@ -97,10 +112,14 @@ export const Sound = {
 
 // Подготавливаем звук после жеста пользователя и связываем кнопку.
 export function initializeAudio(button) {
-  // Первый клик или нажатие клавиши создаёт аудиообъекты.
-  const initialize = () => Sound.init();
+  // Пробуем фон сразу; первый жест разрешает звук при запрете автозапуска.
+  const initialize = () => {
+    Sound.init();
+    Sound.startBackground();
+  };
   window.addEventListener("pointerdown", initialize, { once: true });
   window.addEventListener("keydown", initialize, { once: true });
+  initialize();
   button.addEventListener("click", () => {
     Sound.init();
     const enabled = Sound.toggle();

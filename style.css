@@ -428,8 +428,8 @@ html, body {
 
 /* Левая панель числа работающих энергоклассов. */
 .stat-panel {
-  left: 2.5vw; top: 50%;
-  padding: 1.6vh 2vw;
+  left: 2vw; top: 50%;
+  padding: 1.6vh 1.2vw;
   border: 2px solid rgba(0, 200, 255, 0.5);
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(0, 180, 255, 0.4),
@@ -438,13 +438,13 @@ html, body {
 }
 /* Малые подписи счётчика. */
 .stat-label {
-  font-size: 1vw; font-weight: 600;
+  font-size: 0.8vw; font-weight: 600;
   color: var(--color-muted); letter-spacing: 0.3vw;
   margin: 0.3vh 0;
 }
 /* Крупное число с золотистым свечением. */
 .stat-number {
-  font-size: 6vw; font-weight: 900;
+  font-size: 5vw; font-weight: 900;
   line-height: 1; margin: 0.5vh 0;
   color: var(--color-accent);
   text-shadow: 0 0 20px #ffaa00, 0 0 40px rgba(255, 150, 0, 0.6);
@@ -475,8 +475,8 @@ html, body {
 }
 
 .school-panel {
-  right: 2.5vw; top: 45%;
-  padding: 1.4vh 1.5vw;
+  right: 2vw; top: 45%;
+  padding: 1.4vh 1.2vw;
   border: 2px solid rgba(0, 255, 163, 0.6);
   border-radius: 10px;
   box-shadow: 0 0 30px rgba(0, 255, 163, 0.4);
@@ -488,7 +488,7 @@ html, body {
 .school-panel.show { opacity: 1; }
 /* Название подключаемой школы. */
 .school-name {
-  font-size: 1.4vw; font-weight: 800;
+  font-size: 1.15vw; font-weight: 800;
   color: #ffffff; letter-spacing: 0.1vw;
   margin-bottom: 0.4vh;
 }
