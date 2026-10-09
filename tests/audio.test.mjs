@@ -14,6 +14,7 @@ class FakeHowl {
   }
   play(id = ++this.nextId) { this.ids.add(id); this.playCalls.push(id); return id; }
   playing(id) { return this.ids.has(id); }
+  state() { return this.loading ? 'loading' : 'loaded'; }
   once(event, callback, id) { this.listeners.push({ event, callback, id }); }
   off(event, callback, id) {
     this.listeners = this.listeners.filter(item => !(item.event === event && item.callback === callback && item.id === id));
@@ -91,4 +92,19 @@ test('starting while muted remembers the request and respects subsequent unmute'
   assert.equal(Sound.sounds.bg.playCalls.length, 0);
   Sound.toggle();
   assert.equal(Sound.sounds.bg.playCalls.length, 1);
+});
+
+test('slow background loading does not queue stale ducking after effects have ended', () => {
+  const background = Sound.sounds.bg;
+  background.loading = true;
+  const click = Sound.play('click');
+  Sound.startBackground();
+  const whoosh = Sound.play('whoosh');
+  Sound.sounds.click.emit('end', click);
+  Sound.sounds.whoosh.emit('end', whoosh);
+  assert.equal(background.lastFade, undefined);
+  background.loading = false;
+  background.options.onplay();
+  assert.equal(background.lastFade.to, 0.25);
+  assert.equal(Sound.activeEffects.size, 0);
 });

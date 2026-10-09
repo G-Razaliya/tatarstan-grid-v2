@@ -23,7 +23,11 @@ export const Sound = {
       beep:    new Howl({ src: ["snd-beep.mp3"],    volume: 0.35 }),
       connect: new Howl({ src: ["snd-connect.mp3"], volume: 0.85, rate: 2 }),
       victory: new Howl({ src: ["akto_yy_zal-nachalomeropriyatiy_[cut_10sec].mp3"], volume: 0.7 }),
-      bg:      new Howl({ src: ["snd-bg.mp3"],      volume: 0.25, loop: true })
+      bg: new Howl({
+        src: ["snd-bg.mp3"], volume: 0.25, loop: true,
+        // После загрузки применяем актуальную громкость, а не старую очередь fade.
+        onplay: () => this.updateBackground()
+      })
     };
   },
 
@@ -67,6 +71,8 @@ export const Sound = {
   updateBackground() {
     if (!this.enabled || this.backgroundId === null) return;
     const background = this.sounds.bg;
+    // Не ставим изменения громкости в очередь, пока музыка ещё загружается.
+    if (background.state() !== "loaded" || !background.playing(this.backgroundId)) return;
     const volume = background.volume(this.backgroundId);
     const target = this.activeEffects.size ? 0.04 : 0.25;
     background.volume(volume, this.backgroundId);
