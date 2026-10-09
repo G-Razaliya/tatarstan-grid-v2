@@ -6,7 +6,7 @@ export function initializeMap() {
   // Карта служит фоном презентации: ручная навигация отключена.
   const map = L.map("leafletMap", {
     zoomControl: false, attributionControl: false,
-    center: [55.4, 51], zoom: 7.6, zoomSnap: 0.1,
+    center: [55.4, 51], zoom: 7.6, zoomSnap: 0.05,
     zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false,
     dragging: false, touchZoom: false, doubleClickZoom: false,
     scrollWheelZoom: false, boxZoom: false, keyboard: false, inertia: false
@@ -74,9 +74,14 @@ export function initializeMap() {
     const stat = document.querySelector(".stat-panel").getBoundingClientRect();
     const school = document.querySelector(".school-panel").getBoundingClientRect();
     const title = document.querySelector(".title").getBoundingClientRect();
+    const finalPlate = document.getElementById("finalPlate");
+    const gap = 24;
+    // Резервируем фактическую высоту плашки, чтобы увеличить карту без перекрытий.
+    const bottom = finalPlate.getBoundingClientRect().height
+      + parseFloat(getComputedStyle(finalPlate).bottom) + gap;
     map.fitBounds(bounds, {
-      paddingTopLeft: [Math.min(stat.right + 40, width * 0.25), Math.min(title.bottom + 40, height * 0.25)],
-      paddingBottomRight: [Math.min(width - school.left + 40, width * 0.25), height * 0.3],
+      paddingTopLeft: [Math.min(stat.right + gap, width * 0.25), Math.min(title.bottom + gap, height * 0.25)],
+      paddingBottomRight: [Math.min(width - school.left + gap, width * 0.25), bottom],
       animate: false
     });
     synchronize();

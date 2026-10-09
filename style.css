@@ -538,7 +538,7 @@ html, body {
 /* Финальная плашка первоначально сдвинута вниз и прозрачна. */
 .final-plate {
   position: fixed;
-  left: 50%; bottom: 15vh;
+  left: 50%; bottom: 8vh;
   transform: translate(-50%, 200%);
   z-index: 20;
   padding: 1.8vh 4vw;
@@ -573,7 +573,7 @@ html, body {
 /* Основная кнопка закреплена снизу по центру. */
 .btn-connect {
   position: fixed;
-  left: 50%; bottom: 4vh;
+  left: 50%; bottom: 2vh;
   transform: translateX(-50%);
   z-index: 20;
   padding: 1.4vh 3vw;
