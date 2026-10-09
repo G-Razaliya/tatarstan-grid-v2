@@ -1,3 +1,4 @@
+// Города сети: hub отмечает Казань, labelOffset и anchor размещают подписи.
 export const cities = [
   { name: "Казань",         lat: 55.79, lon: 49.12, hub: true, labelOffset: [-20, 30], anchor: "end" },
   { name: "Высокая Гора",   lat: 55.91, lon: 49.31, labelOffset: [-20, -18], anchor: "end" },
@@ -15,6 +16,8 @@ export const cities = [
   { name: "Нижнекамск",     lat: 55.64, lon: 51.82, labelOffset: [-16, 14],  anchor: "end" }
 ];
 
+// Координаты и подпись нового подключаемого лицея.
 export const schoolCity = { name: "Лицей «Прогресс»", lat: 55.81, lon: 49.44, labelOffset: [22, -20], anchor: "start" };
 
+// Задержка старта и интервал отсчёта в миллисекундах.
 export const timing = Object.freeze({ countdownDelay: 500, countdownStep: 1750 });

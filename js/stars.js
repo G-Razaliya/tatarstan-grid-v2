@@ -1,12 +1,15 @@
+// Создаёт анимированный звёздный фон на canvas.
 export function initializeStars(starsCanvas) {
   const starsCtx = starsCanvas.getContext("2d");
   let stars = [];
 
+  // Подгоняем холст под окно и заново распределяем звёзды.
   function resizeStars() {
     starsCanvas.width = window.innerWidth;
     starsCanvas.height = window.innerHeight;
     generateStars();
   }
+  // Количество звёзд зависит от площади; параметры выбираются случайно.
   function generateStars() {
     const count = Math.floor((starsCanvas.width * starsCanvas.height) / 8000);
     stars = [];
@@ -21,6 +24,7 @@ export function initializeStars(starsCanvas) {
       });
     }
   }
+  // Очищаем кадр и рисуем звёзды с плавно меняющейся яркостью.
   function drawStars(t) {
     starsCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
     stars.forEach(s => {
@@ -31,8 +35,10 @@ export function initializeStars(starsCanvas) {
       starsCtx.fill();
     });
   }
+  // При изменении окна фон заполняет новую площадь.
   window.addEventListener("resize", resizeStars);
   resizeStars();
+  // requestAnimationFrame передаёт время в миллисекундах; переводим в секунды.
   function starLoop(ts) {
     drawStars(ts / 1000);
     requestAnimationFrame(starLoop);

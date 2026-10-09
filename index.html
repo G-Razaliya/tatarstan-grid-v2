@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
   <head>
+    <!-- Кодировка и масштаб страницы. -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Энергоклассы Татарстана</title>
+    <!-- Стили карты и оформление презентации. -->
     <link rel="stylesheet" href="leaflet.css">
     <link rel="stylesheet" href="style.css">
+    <!-- Локальные библиотеки: графика, геоданные, карта и звук. -->
     <script src="d3.v7.min.js"></script>
     <script src="topojson-client.min.js"></script>
     <script src="leaflet.js"></script>
@@ -13,75 +16,94 @@
   </head>
   <body>
 
+    <!-- Декоративный звёздный фон. -->
     <canvas id="stars" aria-hidden="true"></canvas>
 
+    <!-- Логотип компании поверх обеих сцен. -->
     <div class="company-logo">
       <img src="logo.png" alt="Логотип">
     </div>
 
+    <!-- Переключение звука с доступным описанием. -->
     <button class="sound-btn" id="soundBtn" type="button" title="Звук вкл/выкл" aria-label="Выключить звук" aria-pressed="true">🔊</button>
 
+    <!-- Начальная сцена: глобус в постоянной системе SVG-координат. -->
     <div id="globeWrap">
       <svg id="globeSvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
 
+    <!-- Карта недоступна для взаимодействия до окончания перехода. -->
     <div id="mapWrap" inert>
+      <!-- Leaflet рисует спутниковый фон и границы региона. -->
       <div id="leafletMap"></div>
 
+      <!-- Отдельный SVG содержит сеть городов и эффекты подключения. -->
       <svg id="mapOverlay">
         <defs>
+          <!-- Цвет линий между Казанью и городами. -->
           <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%"   stop-color="#ffb84d" stop-opacity="1"/>
             <stop offset="100%" stop-color="#ff8800" stop-opacity="0.8"/>
           </linearGradient>
+          <!-- Свечение существующих городов. -->
           <radialGradient id="cityGlow">
             <stop offset="0%"   stop-color="#fff5c2" stop-opacity="1"/>
             <stop offset="35%"  stop-color="#ffcc33" stop-opacity="0.85"/>
             <stop offset="100%" stop-color="#ff8800" stop-opacity="0"/>
           </radialGradient>
+          <!-- Зелёное свечение нового лицея. -->
           <radialGradient id="schoolGlow">
             <stop offset="0%"   stop-color="#d6ffef" stop-opacity="1"/>
             <stop offset="35%"  stop-color="#00ffa3" stop-opacity="0.85"/>
             <stop offset="100%" stop-color="#00ffa3" stop-opacity="0"/>
           </radialGradient>
         </defs>
+        <!-- Порядок групп задаёт наложение: линии, маркеры, эффекты. -->
         <g id="threadsLayer"></g>
         <g id="citiesLayer"></g>
         <g id="fxLayer"></g>
       </svg>
 
+      <!-- Заголовок презентации. -->
       <div class="title">
         <div class="title-top">ЭНЕРГОКЛАССЫ</div>
         <div class="title-bottom">ТАТАРСТАНА</div>
       </div>
 
+      <!-- Счётчик действующих энергоклассов. -->
       <div class="stat-panel">
         <div class="stat-label">УЖЕ РАБОТАЮТ</div>
         <div class="stat-number" id="counter" aria-live="polite">26</div>
         <div class="stat-label">ЭНЕРГОКЛАССА</div>
       </div>
 
+      <!-- Название лицея и текущий статус подключения. -->
       <div class="school-panel" id="schoolPanel">
         <div class="school-name">Лицей «Прогресс»</div>
         <div class="school-status" id="schoolStatus" role="status">ОЖИДАНИЕ<br>ПОДКЛЮЧЕНИЯ...</div>
       </div>
 
+      <!-- Итоговая плашка появляется после успешного подключения. -->
       <div class="final-plate" id="finalPlate">
         <div class="final-small">НОВЫЙ ЭНЕРГОКЛАСС</div>
         <div class="final-big">ЗАПУЩЕН!</div>
       </div>
 
+      <!-- Центральный отсчёт перед запуском. -->
       <div class="countdown" id="countdown">
         <div class="countdown-number" id="countdownNumber"></div>
       </div>
 
+      <!-- Запуск подключения разрешается после загрузки карты. -->
       <button type="button" class="btn-connect" id="connectBtn" disabled>⚡ Подключить энергокласс</button>
     </div>
 
+    <!-- Начальная кнопка сообщает о загрузке и запускает приближение. -->
     <div class="start-screen" id="startScreen">
       <button type="button" class="btn-start" id="startBtn" disabled>Загрузка презентации…</button>
     </div>
 
+    <!-- Главный модуль подключает сцены и управляет этапами. -->
     <script type="module" src="script.js"></script>
   </body>
 </html>

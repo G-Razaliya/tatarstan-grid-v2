@@ -1,5 +1,7 @@
+/* Сброс стандартных отступов и единый расчёт размеров. */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Общие цвета и фон панелей. */
 :root {
   --color-background: #01050e;
   --color-text: #e6f1ff;
@@ -9,13 +11,16 @@
   --panel-background: linear-gradient(135deg, rgba(4, 18, 40, 0.9), rgba(6, 30, 60, 0.85));
 }
 
+/* Атрибут hidden скрывает элемент независимо от его display. */
 [hidden] { display: none !important; }
 
+/* Контур фокуса для управления клавиатурой. */
 button:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 6px;
 }
 
+/* Полноэкранная сцена без прокрутки. */
 html, body {
   width: 100%; height: 100%;
   overflow: hidden;
@@ -24,11 +29,13 @@ html, body {
   color: var(--color-text);
 }
 
+/* Звёздный холст находится под всеми сценами. */
 #stars {
   position: fixed; inset: 0;
   z-index: 0; display: block;
 }
 
+/* Положение, подложка и свечение логотипа. */
 .company-logo {
   position: fixed;
   top: 3vh;
@@ -42,10 +49,12 @@ html, body {
   box-shadow: 0 0 25px rgba(0, 150, 220, 0.25);
   transition: all 0.3s ease;
 }
+/* Усиление свечения логотипа при наведении. */
 .company-logo:hover {
   border-color: rgba(0, 220, 255, 0.6);
   box-shadow: 0 0 35px rgba(0, 200, 255, 0.5);
 }
+/* Ограничение размеров изображения без искажения пропорций. */
 .company-logo img {
   display: block;
   max-height: 60px;
@@ -62,13 +71,16 @@ html, body {
   z-index: 1;
   transition: opacity 1s ease;
 }
+/* SVG глобуса заполняет контейнер. */
 #globeSvg { width: 100%; height: 100%; display: block; }
+/* Фон и атмосферное свечение планеты. */
 .globe-sphere {
   fill: #0a1a30;
   stroke: #1a4a7a;
   stroke-width: 0.6;
   filter: drop-shadow(0 0 30px rgba(0, 150, 220, 0.4));
 }
+/* Заливка и границы стран. */
 .country {
   fill: #123a5f;
   stroke: #2d6a9a;
@@ -84,8 +96,10 @@ html, body {
   transition: opacity 1.2s ease;
   background: var(--color-background);
 }
+/* Открытая карта принимает взаимодействие. */
 #mapWrap.show { opacity: 1; pointer-events: auto; }
 
+/* Контейнер спутникового фона на весь экран. */
 #leafletMap {
   position: absolute;
   inset: 0;
@@ -94,10 +108,12 @@ html, body {
   background: var(--color-background);
 }
 
+/* Цветокоррекция спутниковых снимков. */
 .leaflet-tile-pane {
   filter: brightness(0.85) saturate(1.3) contrast(1.05);
 }
 
+/* Декоративные огни и затемнение по краям; центр прорезан маской. */
 #leafletMap::after {
   content: "";
   position: absolute;
@@ -155,6 +171,7 @@ html, body {
       rgba(1, 8, 25, 0.85) 0%,
       rgba(0, 4, 15, 0.95) 60%,
       rgba(0, 2, 8, 1) 100%);
+  /* Размеры слоёв соответствуют порядку градиентов выше. */
   background-size:
     100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
     100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
@@ -169,6 +186,7 @@ html, body {
     100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
     180px 180px, 220px 220px, 260px 260px, 300px 300px, 340px 340px,
     100% 100%;
+  /* Смещения разрывают повторяющийся рисунок огней. */
   background-position:
     0 0, 0 0, 0 0, 0 0, 0 0, 0 0,
     0 0, 0 0, 0 0, 0 0, 0 0,
@@ -183,6 +201,7 @@ html, body {
     0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0,
     0 0, 40px 60px, 100px 30px, 20px 120px, 150px 80px,
     0 0;
+  /* Прозрачная середина маски оставляет центральную карту открытой. */
   -webkit-mask-image: radial-gradient(ellipse 42% 52% at 52% 48%,
                         transparent 0%,
                         transparent 88%,
@@ -193,6 +212,7 @@ html, body {
                         black 100%);
 }
 
+/* Сеть поверх Leaflet не перехватывает указатель. */
 #mapOverlay {
   position: absolute;
   top: 0;
@@ -201,12 +221,14 @@ html, body {
   pointer-events: none;
 }
 
+/* Несколько теней усиливают свечение контура региона. */
 .tatar-glow-border {
   filter: drop-shadow(0 0 6px #00e8ff)
           drop-shadow(0 0 14px rgba(0, 220, 255, 0.9))
           drop-shadow(0 0 26px rgba(0, 180, 255, 0.55));
 }
 
+/* Переопределения стандартного оформления Leaflet. */
 .leaflet-control-attribution { display: none !important; }
 .leaflet-container { background: var(--color-background) !important; }
 
@@ -222,19 +244,23 @@ html, body {
   stroke-dasharray: 2000;
   stroke-dashoffset: 2000;
 }
+/* Показанная линия плавно пульсирует. */
 .thread.visible {
   opacity: 0.95;
   animation: threadPulse 3s ease-in-out infinite;
 }
+/* Сдвиг штрихов создаёт эффект прорисовки линии. */
 .thread.drawn {
   transition: stroke-dashoffset 3.5s ease-out;
   stroke-dashoffset: 0;
 }
+/* Зелёный цвет отличает новое соединение лицея. */
 .school-thread {
   stroke: var(--color-connected);
   filter: drop-shadow(0 0 6px var(--color-connected));
 }
 
+/* Цикл изменения прозрачности соединений. */
 @keyframes threadPulse {
   0%, 100% { opacity: 0.85; }
   50%      { opacity: 1; }
@@ -244,20 +270,24 @@ html, body {
 .city { opacity: 0; transition: opacity 0.8s ease; }
 .city.visible { opacity: 1; }
 
+/* Радиальный градиент создаёт свечение вокруг точки города. */
 .city-glow {
   fill: url(#cityGlow);
   animation: cityPulse 2.5s ease-in-out infinite;
 }
+/* Мягкое мерцание обычного города. */
 @keyframes cityPulse {
   0%, 100% { opacity: 0.75; }
   50%      { opacity: 1; }
 }
 
+/* Яркое ядро городской точки. */
 .city-core {
   fill: #fff5c2;
   filter: drop-shadow(0 0 6px var(--color-accent)) drop-shadow(0 0 14px #ff8800);
 }
 
+/* Тёмная обводка сохраняет читаемость подписи на снимках. */
 .city-label {
   fill: #ffffff;
   font-size: 14px;
@@ -270,7 +300,9 @@ html, body {
   pointer-events: none;
 }
 
+/* Казань выделена более крупной точкой и подписью. */
 .hub .city-glow { animation: hubPulse 2s ease-in-out infinite; }
+/* Отдельный ритм свечения центрального города. */
 @keyframes hubPulse {
   0%, 100% { opacity: 0.85; }
   50%      { opacity: 1; }
@@ -292,15 +324,18 @@ html, body {
 }
 .school-marker.show { opacity: 1; }
 
+/* Зелёный градиент и пульсация лицея. */
 .school-glow {
   fill: url(#schoolGlow);
   animation: schoolPulse 2.5s ease-in-out infinite;
 }
+/* Изменение яркости свечения лицея. */
 @keyframes schoolPulse {
   0%, 100% { opacity: 0.7; }
   50%      { opacity: 1; }
 }
 
+/* Светящееся кольцо вокруг нового объекта. */
 .school-halo {
   fill: none;
   stroke: var(--color-connected);
@@ -308,16 +343,19 @@ html, body {
   filter: drop-shadow(0 0 10px var(--color-connected));
   animation: schoolHalo 2s ease-in-out infinite;
 }
+/* Мерцание внешнего кольца лицея. */
 @keyframes schoolHalo {
   0%, 100% { opacity: 0.6; }
   50%      { opacity: 1; }
 }
 
+/* Центральная зелёная точка лицея. */
 .school-core {
   fill: var(--color-connected);
   filter: drop-shadow(0 0 8px var(--color-connected)) drop-shadow(0 0 18px var(--color-connected));
 }
 
+/* Подпись лицея с обводкой и зелёной тенью. */
 .school-label {
   fill: var(--color-connected);
   font-size: 15px;
@@ -333,6 +371,7 @@ html, body {
 /* Вспышка */
 .flash { fill: #ffffff; opacity: 0; pointer-events: none; }
 .flash.burst { animation: flashBurst 1.1s ease-out; }
+/* Вспышка расширяется и растворяется. */
 @keyframes flashBurst {
   0%   { r: 8; opacity: 1; }
   40%  { r: 70; opacity: 0.85; }
@@ -348,6 +387,7 @@ html, body {
   filter: drop-shadow(0 0 6px var(--color-connected));
 }
 .ray.burst { animation: rayBurst 1.4s ease-out; }
+/* Луч постепенно исчезает. */
 @keyframes rayBurst {
   0%   { opacity: 1; }
   100% { opacity: 0; }
@@ -364,10 +404,12 @@ html, body {
   filter: drop-shadow(0 0 8px var(--color-connected));
   opacity: 0;
 }
+/* Класс run запускает движение светящегося участка. */
 .impulse.run {
   opacity: 1;
   animation: impulseRun 1.5s ease-in-out;
 }
+/* Сдвиг штрихов перемещает импульс вдоль пути. */
 @keyframes impulseRun {
   0%   { stroke-dashoffset: 0; }
   100% { stroke-dashoffset: -2000; }
@@ -375,6 +417,7 @@ html, body {
 
 /* ===== UI ===== */
 .stat-panel,
+/* Правая панель появляется после открытия карты. */
 .school-panel {
   position: fixed;
   transform: translateY(-50%);
@@ -383,6 +426,7 @@ html, body {
   backdrop-filter: blur(6px);
 }
 
+/* Левая панель числа работающих энергоклассов. */
 .stat-panel {
   left: 2.5vw; top: 50%;
   padding: 1.6vh 2vw;
@@ -392,30 +436,37 @@ html, body {
               inset 0 0 30px rgba(0, 120, 200, 0.15);
   text-align: center;
 }
+/* Малые подписи счётчика. */
 .stat-label {
   font-size: 1vw; font-weight: 600;
   color: var(--color-muted); letter-spacing: 0.3vw;
   margin: 0.3vh 0;
 }
+/* Крупное число с золотистым свечением. */
 .stat-number {
   font-size: 6vw; font-weight: 900;
   line-height: 1; margin: 0.5vh 0;
   color: var(--color-accent);
   text-shadow: 0 0 20px #ffaa00, 0 0 40px rgba(255, 150, 0, 0.6);
 }
+/* Класс bump подчёркивает увеличение счётчика. */
 .stat-number.bump { animation: numberBump 1s ease; }
+/* Число кратковременно увеличивается и вспыхивает. */
 @keyframes numberBump {
   0%   { transform: scale(1); color: var(--color-accent); }
   30%  { transform: scale(1.4); color: #ffffff; text-shadow: 0 0 50px #ffffff; }
   100% { transform: scale(1); color: var(--color-accent); }
 }
 
+/* Заголовок закреплён в левом верхнем углу. */
 .title { position: fixed; left: 2.5vw; top: 4vh; z-index: 10; }
+/* Верхняя строка заголовка. */
 .title-top {
   font-size: 2vw; font-weight: 800;
   color: #ffffff; letter-spacing: 0.2vw;
   text-shadow: 0 0 20px rgba(0, 200, 255, 0.8);
 }
+/* Название региона выделено золотистым цветом. */
 .title-bottom {
   font-size: 3vw; font-weight: 900;
   color: var(--color-accent); letter-spacing: 0.3vw;
@@ -433,24 +484,30 @@ html, body {
   opacity: 0;
   transition: opacity 0.6s ease;
 }
+/* Показ панели лицея. */
 .school-panel.show { opacity: 1; }
+/* Название подключаемой школы. */
 .school-name {
   font-size: 1.4vw; font-weight: 800;
   color: #ffffff; letter-spacing: 0.1vw;
   margin-bottom: 0.4vh;
 }
+/* Ожидание обозначено мигающим золотистым текстом. */
 .school-status {
   font-size: 0.8vw; font-weight: 700;
   color: var(--color-accent); letter-spacing: 0.2vw;
   line-height: 1.4;
   animation: statusBlink 1.4s ease-in-out infinite;
 }
+/* Мигание статуса до подключения. */
 @keyframes statusBlink {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.4; }
 }
+/* Успех меняет цвет на зелёный и отключает мигание. */
 .school-status.connected { color: var(--color-connected); animation: none; }
 
+/* Отсчёт расположен по центру поверх интерфейса. */
 .countdown {
   position: fixed;
   left: 50%; top: 50%;
@@ -459,7 +516,9 @@ html, body {
   display: none;
   pointer-events: none;
 }
+/* Включение видимости отсчёта. */
 .countdown.show { display: block; }
+/* Размер, свечение и появление цифры отсчёта. */
 .countdown-number {
   font-size: 18vw;
   font-weight: 900;
@@ -469,12 +528,14 @@ html, body {
   letter-spacing: -1vw;
   opacity: 1;
 }
+/* Каждая цифра увеличивается из уменьшенного состояния. */
 @keyframes countPulse {
   0%   { transform: scale(0.5); opacity: 0; }
   40%  { transform: scale(1.15); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* Финальная плашка первоначально сдвинута вниз и прозрачна. */
 .final-plate {
   position: fixed;
   left: 50%; bottom: 15vh;
@@ -491,21 +552,25 @@ html, body {
   transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.2), opacity 0.5s ease;
   white-space: nowrap;
 }
+/* Плашка возвращается на место с плавным появлением. */
 .final-plate.show {
   opacity: 1;
   transform: translate(-50%, 0);
 }
+/* Подзаголовок финального сообщения. */
 .final-small {
   font-size: 1vw; font-weight: 700;
   color: var(--color-muted); letter-spacing: 0.4vw;
   margin-bottom: 0.6vh;
 }
+/* Главная надпись об успешном запуске. */
 .final-big {
   font-size: 3.2vw; font-weight: 900;
   color: var(--color-accent); letter-spacing: 0.3vw;
   text-shadow: 0 0 25px #ffaa00, 0 0 60px rgba(255, 150, 0, 0.8);
 }
 
+/* Основная кнопка закреплена снизу по центру. */
 .btn-connect {
   position: fixed;
   left: 50%; bottom: 4vh;
@@ -523,15 +588,18 @@ html, body {
   transition: all 0.3s;
   backdrop-filter: blur(8px);
 }
+/* Наведение приподнимает кнопку и усиливает свечение. */
 .btn-connect:hover {
   transform: translateX(-50%) translateY(-2px);
   box-shadow: 0 0 50px rgba(0, 220, 255, 1);
 }
+/* Недоступная кнопка приглушена и остаётся на месте. */
 .btn-connect:disabled {
   opacity: 0.5; cursor: not-allowed; box-shadow: none;
   transform: translateX(-50%);
 }
 
+/* Начальный слой центрирует кнопку над глобусом. */
 .start-screen {
   position: fixed; inset: 0;
   z-index: 100;
@@ -539,7 +607,9 @@ html, body {
   pointer-events: none;
   transition: opacity 0.8s ease;
 }
+/* Затухание начального слоя перед окончательным скрытием. */
 .start-screen.hide { opacity: 0; }
+/* Кнопка начала принимает клики внутри прозрачного слоя. */
 .btn-start {
   pointer-events: auto;
   padding: 1.5vh 3vw;
@@ -554,6 +624,7 @@ html, body {
   transition: all 0.3s;
   backdrop-filter: blur(8px);
 }
+/* Отклик начальной кнопки на наведение. */
 .btn-start:hover {
   transform: translateY(-3px);
   box-shadow: 0 0 60px rgba(0, 220, 255, 1);
@@ -582,10 +653,12 @@ html, body {
   transition: all 0.3s;
   backdrop-filter: blur(6px);
 }
+/* Подсветка переключателя звука при наведении. */
 .sound-btn:hover {
   border-color: #00e0ff;
   box-shadow: 0 0 20px rgba(0, 200, 255, 0.6);
 }
+/* При выключенном звуке переключатель становится серым. */
 .sound-btn.muted {
   color: #666;
   border-color: rgba(100, 100, 100, 0.5);

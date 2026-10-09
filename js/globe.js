@@ -1,7 +1,9 @@
+// Создаёт вращающийся глобус и переход к Татарстану.
 export function initializeGlobe() {
   const globeSvg = d3.select("#globeSvg");
   const gW = 1000, gH = 700;
 
+  // Ортографическая проекция показывает видимую половину Земли.
   const globeProjection = d3.geoOrthographic()
     .scale(280)
     .translate([gW / 2, gH / 2])
@@ -10,14 +12,17 @@ export function initializeGlobe() {
 
   const globePath = d3.geoPath().projection(globeProjection);
 
+  // Круг задаёт фон и светящийся край планеты.
   globeSvg.append("circle")
     .attr("class", "globe-sphere")
     .attr("cx", gW / 2).attr("cy", gH / 2).attr("r", 280);
 
+  // Вращение останавливается при запуске приближения.
   let autoRotate = true;
   let rotation = [-51.5, -55.2];
   const rotateSpeed = 0.08;
 
+  // Преобразуем TopoJSON в геометрию стран и рисуем SVG-пути.
   const ready = d3.json("countries-110m.json").then(world => {
     const countries = topojson.feature(world, world.objects.countries);
     globeSvg.selectAll("path.country")
@@ -29,6 +34,7 @@ export function initializeGlobe() {
     console.log("✓ Глобус загружен");
   });
 
+  // Обновляем проекцию стран на каждом кадре.
   function rotateGlobe() {
     if (!autoRotate) return;
     rotation[0] += rotateSpeed;
@@ -38,6 +44,7 @@ export function initializeGlobe() {
   }
   rotateGlobe();
 
+  // Сначала поворачиваемся к Татарстану, затем увеличиваем планету.
   function approach() {
     autoRotate = false;
     const targetRot = [-51.5, -55.2];
@@ -46,6 +53,7 @@ export function initializeGlobe() {
     return d3.transition()
       .duration(1200)
       .ease(d3.easeCubicInOut)
+      // Интерполяция углов плавно приводит регион в центр.
       .tween("rotate", () => {
         const i0 = d3.interpolate(startRot[0], targetRot[0]);
         const i1 = d3.interpolate(startRot[1], targetRot[1]);
@@ -59,6 +67,7 @@ export function initializeGlobe() {
       .transition()
       .duration(1400)
       .ease(d3.easeCubicIn)
+      // Масштаб стран и радиус фона увеличиваются вместе.
       .tween("zoom", () => {
         const iScale = d3.interpolate(280, 2400);
         return t => {
@@ -71,5 +80,6 @@ export function initializeGlobe() {
       .end();
   }
 
+  // ready сообщает о загрузке; approach завершается после анимации.
   return { ready, approach };
 }
